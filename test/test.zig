@@ -9,15 +9,12 @@ const test_data = struct {
     sum: u64,
 
     pub fn init(sum: u64, input: []const u8) test_data {
-        return test_data {
-            .sum = sum,
-            .input = input
-        };
+        return test_data{ .sum = sum, .input = input };
     }
 };
 
 fn sum_tests() [14]test_data {
-    return []test_data{
+    return [_]test_data{
         test_data.init(0xef46db3751d8e999, ""),
         test_data.init(0xd24ec4f1a98c6e5b, "a"),
         test_data.init(0x65f708ca92d04a61, "ab"),
@@ -35,14 +32,13 @@ fn sum_tests() [14]test_data {
     };
 }
 
-
 test "xxhash.64.basic" {
     var data = sum_tests();
 
-    for (data) |d, i| {
+    for (data) |d| {
         var xx = xxhash.init(0);
         _ = xx.write(d.input);
-        
+
         assert(xx.sum() == d.sum);
         assert(xx.checksum(d.input, 0) == d.sum);
     }
