@@ -59,20 +59,20 @@ pub const xxhash = struct {
         var p: usize = 0;
         var n = self.buf_used;
 
-        while (i64(p) <= n - 8) : (p += 8) {
+        while (@as(i64, p) <= n - 8) : (p += 8) {
             h64 ^= rol31(uint64(self.buf[p .. p + 8]) *% prime_2) *% prime_1;
             h64 = rol27(h64) *% prime_1 +% prime_4;
         }
 
-        if (i64(p + 4) <= n) {
+        if (@as(i64, p + 4) <= n) {
             var sub = self.buf[p .. p + 4];
-            h64 ^= u64(uint32(sub)) *% prime_1;
+            h64 ^= @as(u64, uint32(sub)) *% prime_1;
             h64 = rol23(h64) *% prime_2 +% prime_3;
             p += 4;
         }
 
-        while (i64(p) < n) : (p += 1) {
-            h64 ^= u64(self.buf[p]) *% prime_5;
+        while (@as(i64, p) < n) : (p += 1) {
+            h64 ^= @as(u64, self.buf[p]) *% prime_5;
             h64 = rol11(h64) *% prime_1;
         }
 
@@ -89,20 +89,20 @@ pub const xxhash = struct {
         var n = input.len;
         var m = usize(self.buf_used);
 
-        self.total_len += u64(n);
+        self.total_len += @as(u64, n);
 
         var r = self.buf.len - m;
 
         if (n < r) {
             mem.copy(u8, self.buf[m..], input);
-            self.buf_used += i64(input.len);
+            self.buf_used += @as(i64, input.len);
             return n;
         }
 
         var p: usize = 0;
         if (m > 0) {
             mem.copy(u8, self.buf[usize(self.buf_used)..], input[0..r]);
-            self.buf_used += i64(input.len - r);
+            self.buf_used += @as(i64, input.len - r);
 
             self.v1 = rol31(self.v1 +% uint64(self.buf[0..]) *% prime_2) *% prime_1;
             self.v2 = rol31(self.v2 +% uint64(self.buf[8..]) *% prime_2) *% prime_1;
@@ -123,11 +123,10 @@ pub const xxhash = struct {
         }
 
         mem.copy(u8, self.buf[usize(self.buf_used)..], input[p..]);
-        self.buf_used += i64(input.len - p);
+        self.buf_used += @as(i64, input.len - p);
 
         return n;
     }
-
 };
 
 pub fn checksum(input: []const u8, seed: u64) u64 {
@@ -173,7 +172,7 @@ pub fn checksum(input: []const u8, seed: u64) u64 {
     }
 
     var p: usize = 0;
-    while (i64(p) <= i64(n) - 8) : (p += 8) {
+    while (@as(i64, @intCast(p)) <= @as(i64, @intCast(n)) - 8) : (p += 8) {
         var sub = input2[p .. p + 8];
         h64 ^= rol31(uint64(sub) *% prime_2) *% prime_1;
         h64 = rol27(h64) *% prime_1 +% prime_4;
@@ -181,13 +180,13 @@ pub fn checksum(input: []const u8, seed: u64) u64 {
 
     if (p + 4 <= n) {
         var sub = input2[p .. p + 4];
-        h64 ^= u64(uint32(sub)) *% prime_1;
+        h64 ^= @as(u64, uint32(sub)) *% prime_1;
         h64 = rol23(h64) *% prime_2 +% prime_3;
         p += 4;
     }
 
     while (p < n) : (p += 1) {
-        h64 ^= u64(input2[p]) *% prime_5;
+        h64 ^= @as(u64, input2[p]) *% prime_5;
         h64 = rol11(h64) *% prime_1;
     }
 
@@ -200,11 +199,11 @@ pub fn checksum(input: []const u8, seed: u64) u64 {
 }
 
 inline fn uint64(buf: []const u8) u64 {
-    return u64(buf[0]) | u64(buf[1]) << 8 | u64(buf[2]) << 16 | u64(buf[3]) << 24 | u64(buf[4]) << 32 | u64(buf[5]) << 40 | u64(buf[6]) << 48 | u64(buf[7]) << 56;
+    return @as(u64, buf[0]) | @as(u64, buf[1]) << 8 | @as(u64, buf[2]) << 16 | @as(u64, buf[3]) << 24 | @as(u64, buf[4]) << 32 | @as(u64, buf[5]) << 40 | @as(u64, buf[6]) << 48 | @as(u64, buf[7]) << 56;
 }
 
 inline fn uint32(buf: []const u8) u32 {
-    return u32(buf[0]) | u32(buf[1]) << 8 | u32(buf[2]) << 16 | u32(buf[3]) << 24;
+    return @as(u32, buf[0]) | @as(u32, buf[1]) << 8 | @as(u32, buf[2]) << 16 | @as(u32, buf[3]) << 24;
 }
 
 inline fn rol1(u: u64) u64 {
