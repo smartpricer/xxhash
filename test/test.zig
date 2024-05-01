@@ -33,7 +33,7 @@ fn sum_tests() [14]test_data {
 }
 
 test "xxhash.64.basic" {
-    var data = sum_tests();
+    const data = sum_tests();
 
     for (data) |d| {
         var xx = xxhash.init(0);

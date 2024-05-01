@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
 
     _ = b.addModule("xxhash", .{
-        .source_file = .{ .path = "src/xxhash.zig" },
+        .root_source_file = .{ .path = "src/xxhash.zig" },
     });
 
     const lib_test = b.addTest(.{
