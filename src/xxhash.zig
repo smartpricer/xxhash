@@ -57,7 +57,7 @@ pub const xxhash = struct {
         }
 
         var p: usize = 0;
-        var n = self.buf_used;
+        const n = self.buf_used;
 
         while (@as(i64, p) <= n - 8) : (p += 8) {
             h64 ^= rol31(uint64(self.buf[p .. p + 8]) *% prime_2) *% prime_1;
@@ -65,7 +65,7 @@ pub const xxhash = struct {
         }
 
         if (@as(i64, p + 4) <= n) {
-            var sub = self.buf[p .. p + 4];
+            const sub = self.buf[p .. p + 4];
             h64 ^= @as(u64, uint32(sub)) *% prime_1;
             h64 = rol23(h64) *% prime_2 +% prime_3;
             p += 4;
@@ -86,12 +86,12 @@ pub const xxhash = struct {
     }
 
     pub fn write(self: *xxhash, input: []const u8) usize {
-        var n = input.len;
-        var m = usize(self.buf_used);
+        const n = input.len;
+        const m = usize(self.buf_used);
 
         self.total_len += @as(u64, n);
 
-        var r = self.buf.len - m;
+        const r = self.buf.len - m;
 
         if (n < r) {
             mem.copy(u8, self.buf[m..], input);
@@ -173,13 +173,13 @@ pub fn checksum(input: []const u8, seed: u64) u64 {
 
     var p: usize = 0;
     while (@as(i64, @intCast(p)) <= @as(i64, @intCast(n)) - 8) : (p += 8) {
-        var sub = input2[p .. p + 8];
+        const sub = input2[p .. p + 8];
         h64 ^= rol31(uint64(sub) *% prime_2) *% prime_1;
         h64 = rol27(h64) *% prime_1 +% prime_4;
     }
 
     if (p + 4 <= n) {
-        var sub = input2[p .. p + 4];
+        const sub = input2[p .. p + 4];
         h64 ^= @as(u64, uint32(sub)) *% prime_1;
         h64 = rol23(h64) *% prime_2 +% prime_3;
         p += 4;
